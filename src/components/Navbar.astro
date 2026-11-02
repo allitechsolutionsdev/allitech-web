@@ -1,0 +1,43 @@
+<nav class="bg-white shadow-sm py-4 sticky top-0 z-50">
+	<div class="max-w-6xl mx-auto px-4 flex justify-between items-center">
+		<!-- Logo -->
+		<a href="/" class="flex items-center gap-3">
+			<img src="/logo.png" alt="Logo AlliTech Solutions" class="h-10 md:h-12 w-auto object-contain" />
+			<span class="text-lg md:text-xl font-bold text-[#6b4c5a]">AlliTech Solutions</span>
+		</a>
+
+		<!-- Menú para Computadora (Oculto en celular) -->
+		<div class="hidden md:flex items-center gap-6">
+			<a href="/" class="text-gray-600 hover:text-[#6b4c5a] font-medium">Inicio</a>
+			<a href="/soluciones" class="text-gray-600 hover:text-[#6b4c5a] font-medium">Soluciones</a>
+			<a href="/contacto" class="text-gray-600 hover:text-[#6b4c5a] font-medium">Soporte</a>
+			<a href="https://wa.me/51903562285" target="_blank" class="bg-[#6b4c5a] text-white px-5 py-2 rounded-lg hover:bg-[#523843] transition text-sm font-semibold">
+				Cotizar
+			</a>
+		</div>
+
+		<!-- Botón de Hamburguesa (Solo visible en celular) -->
+		<button id="menu-btn" class="md:hidden text-gray-600 focus:outline-none">
+			<svg class="w-8 h-8" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M4 6h16M4 12h16M4 18h16"></path></svg>
+		</button>
+	</div>
+
+	<!-- Menú Desplegable para Celular (Oculto por defecto) -->
+	<div id="mobile-menu" class="hidden md:hidden bg-white border-t border-gray-100 absolute w-full left-0 shadow-lg">
+		<div class="flex flex-col px-4 py-4 space-y-4">
+			<a href="/" class="text-gray-600 font-medium hover:text-[#6b4c5a]">Inicio</a>
+			<a href="/soluciones" class="text-gray-600 font-medium hover:text-[#6b4c5a]">Soluciones</a>
+			<a href="/contacto" class="text-gray-600 font-medium hover:text-[#6b4c5a]">Soporte y Reclamos</a>
+			<a href="https://wa.me/51903562285" target="_blank" class="bg-[#6b4c5a] text-white text-center px-5 py-3 rounded-lg font-semibold">Cotizar por WhatsApp</a>
+		</div>
+	</div>
+</nav>
+
+<script>
+	const btn = document.getElementById('menu-btn');
+	const menu = document.getElementById('mobile-menu');
+
+	btn?.addEventListener('click', () => {
+		menu?.classList.toggle('hidden');
+	});
+</script>

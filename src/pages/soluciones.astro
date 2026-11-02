@@ -1,0 +1,165 @@
+---
+import '../styles/global.css';
+import Navbar from '../components/Navbar.astro';
+import Footer from '../components/Footer.astro';
+import { categorias } from '../data/proyectos'; 
+---
+<html lang="es">
+	<head>
+		<meta charset="utf-8" />
+		<meta name="viewport" content="width=device-width" />
+		<title>Soluciones | AlliTech Solutions</title>
+	</head>
+	<body class="bg-gray-50 text-gray-800 font-sans flex flex-col min-h-screen">
+		
+		<Navbar />
+
+		<main class="flex-grow py-12">
+			<div class="max-w-7xl mx-auto px-4 flex flex-col md:flex-row gap-8">
+				
+				<!-- PANEL LATERAL IZQUIERDO (CATEGORÍAS) -->
+				<aside class="w-full md:w-1/4">
+					<div class="bg-white p-6 rounded-2xl shadow-sm border border-gray-100 sticky top-24">
+						<h2 class="text-xl font-bold text-gray-900 mb-6">Categorías</h2>
+						
+						<ul class="space-y-2" id="lista-categorias">
+							{categorias.map((cat, index) => (
+								<li>
+									<button 
+										class={`categoria-btn w-full text-left px-4 py-3 rounded-xl font-medium transition-colors ${index === 0 ? 'bg-[#6b4c5a] text-white' : 'text-gray-600 hover:bg-gray-100 hover:text-[#6b4c5a]'}`}
+										data-id={cat.id}
+									>
+										{cat.nombre}
+									</button>
+								</li>
+							))}
+						</ul>
+					</div>
+				</aside>
+
+				<!-- CONTENIDO DERECHO (PROGRAMAS DE LA CATEGORÍA) -->
+				<section class="w-full md:w-3/4">
+					<!-- Buscador -->
+					<div class="mb-8 relative">
+						<input type="text" id="buscador" placeholder="Buscar categoria..." class="w-full px-6 py-3 rounded-full border border-gray-300 focus:outline-none focus:ring-2 focus:ring-[#6b4c5a] shadow-sm text-gray-700">
+					</div>
+
+					<!-- Contenedor donde se inyectarán los programas -->
+					<div id="contenido-categoria" class="space-y-10">
+						<!-- El contenido se llena automáticamente -->
+					</div>
+				</section>
+
+			</div>
+		</main>
+
+		<Footer />
+
+		<!-- 1. PRIMERO OCULTAMOS LOS DATOS PARA QUE EL SCRIPT LOS LEA -->
+		<script type="application/json" id="datos-categorias" set:html={JSON.stringify(categorias)}></script>
+
+		<!-- 2. LUEGO EJECUTAMOS EL SCRIPT DEL BUSCADOR -->
+		<script>
+			document.addEventListener('DOMContentLoaded', () => {
+				const datosCategorias = JSON.parse(document.getElementById('datos-categorias')?.innerText || '[]');
+				const botones = document.querySelectorAll('.categoria-btn');
+				const contenedorProgramas = document.getElementById('contenido-categoria');
+				const buscador = document.getElementById('buscador');
+				
+				let categoriaActualId = datosCategorias[0]?.id;
+
+				const mostrarCategoria = (idCategoria, filtro = '') => {
+					const categoriaSeleccionada = datosCategorias.find(c => c.id === idCategoria);
+					if (!categoriaSeleccionada) return;
+
+					// Si cambiamos de categoría, limpiamos el buscador
+					if (categoriaActualId !== idCategoria) {
+						buscador.value = '';
+						filtro = '';
+						categoriaActualId = idCategoria;
+					}
+
+					// Actualizar botones
+					botones.forEach(btn => {
+						if (btn.getAttribute('data-id') === idCategoria) {
+							btn.classList.add('bg-[#6b4c5a]', 'text-white');
+							btn.classList.remove('text-gray-600', 'hover:bg-gray-100', 'hover:text-[#6b4c5a]');
+						} else {
+							btn.classList.remove('bg-[#6b4c5a]', 'text-white');
+							btn.classList.add('text-gray-600', 'hover:bg-gray-100', 'hover:text-[#6b4c5a]');
+						}
+					});
+
+					// Filtrar
+					const programasFiltrados = categoriaSeleccionada.programas.filter(prog => 
+						prog.titulo.toLowerCase().includes(filtro.toLowerCase()) || 
+						prog.descripcion.toLowerCase().includes(filtro.toLowerCase())
+					);
+
+					// Limpiar contenedor
+					contenedorProgramas.innerHTML = '';
+
+					if (programasFiltrados.length === 0) {
+						contenedorProgramas.innerHTML = `
+							<div class="text-center py-12 bg-white rounded-2xl border border-gray-100">
+								<p class="text-gray-500 text-lg">No se encontraron programas con ese nombre en esta categoría.</p>
+							</div>
+						`;
+						return;
+					}
+
+					// Inyectar HTML
+					programasFiltrados.forEach(prog => {
+						const whatsappLink = `https://wa.me/51903562285?text=${encodeURIComponent(prog.whatsappMsg)}`;
+						
+const tarjetaHTML = `
+	<div class="bg-white rounded-2xl shadow-lg overflow-hidden flex flex-col lg:flex-row border border-gray-100">
+		<div class="lg:w-1/2 bg-gray-900 p-6 flex flex-col justify-center items-center">
+			<h3 class="text-white text-lg font-semibold mb-4">Mira cómo funciona</h3>
+			
+			<!-- Reproductor de video real en JS -->
+			<div class="aspect-video w-full bg-black rounded-lg overflow-hidden border border-gray-700">
+				${prog.video ? `<video src="/${prog.video}" controls class="w-full h-full object-cover"></video>` : `<div class="flex items-center justify-center w-full h-full text-gray-400">Video próximamente</div>`}
+			</div>
+
+		</div>
+		<div class="lg:w-1/2 p-8 flex flex-col justify-between">
+			<div>
+				<h3 class="text-2xl font-bold text-gray-900 mb-3">${prog.titulo}</h3>
+				<p class="text-gray-600 mb-6 text-sm leading-relaxed">${prog.descripcion}</p>
+				<div class="bg-[#6b4c5a]/5 p-5 rounded-xl mb-6">
+					<h4 class="text-sm font-bold text-[#6b4c5a] uppercase tracking-wide mb-1">¿Qué problema resuelve?</h4>
+					<p class="text-gray-700 text-sm">${prog.problema}</p>
+				</div>
+			</div>
+			<a href="${whatsappLink}" target="_blank" class="w-full text-center bg-green-500 hover:bg-green-600 text-white font-bold py-4 rounded-xl shadow-md transition-transform transform hover:-translate-y-1">
+				Cotizar por WhatsApp
+			</a>
+		</div>
+	</div>
+`;
+						contenedorProgramas.innerHTML += tarjetaHTML;
+					});
+				};
+
+				// Eventos
+				botones.forEach(btn => {
+					btn.addEventListener('click', (e) => {
+						const id = e.target.getAttribute('data-id');
+						mostrarCategoria(id);
+					});
+				});
+
+				buscador.addEventListener('input', (e) => {
+					mostrarCategoria(categoriaActualId, e.target.value);
+				});
+
+				// Iniciar
+				if (datosCategorias.length > 0) {
+					mostrarCategoria(datosCategorias[0].id);
+				}
+			});
+		</script>
+
+	</body>
+</html>

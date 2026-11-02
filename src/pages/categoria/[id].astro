@@ -1,0 +1,50 @@
+---
+import '../../styles/global.css';
+import Navbar from '../../components/Navbar.astro';
+import Footer from '../../components/Footer.astro';
+import TarjetaPrograma from '../../components/TarjetaPrograma.astro';
+import { categorias } from '../../data/proyectos';
+
+// Esta función le dice a Astro que cree una página por cada categoría que exista en proyectos.ts
+export function getStaticPaths() {
+	return categorias.map((cat) => {
+		return {
+			params: { id: cat.id },
+			props: { categoria: cat }
+		};
+	});
+}
+
+const { categoria } = Astro.props;
+---
+<html lang="es">
+	<head>
+		<meta charset="utf-8" />
+		<meta name="viewport" content="width=device-width" />
+		<title>{categoria.nombre} | AlliTech Solutions</title>
+	</head>
+	<body class="bg-gray-50 text-gray-800 font-sans flex flex-col min-h-screen">
+		
+		<Navbar />
+
+		<main class="flex-grow py-16">
+			<div class="max-w-6xl mx-auto px-4">
+				<a href="/soluciones" class="text-[#6b4c5a] font-semibold mb-6 inline-block hover:underline">&larr; Volver al catálogo</a>
+				
+				<div class="mb-12">
+					<h1 class="text-4xl font-bold text-gray-900 mb-4">{categoria.nombre}</h1>
+					<p class="text-gray-600 text-lg">{categoria.descripcion}</p>
+				</div>
+
+				<!-- Aquí se muestran TODOS los programas de esta categoría -->
+				<div class="flex flex-col gap-10">
+					{categoria.programas.map((prog) => (
+						<TarjetaPrograma {...prog} />
+					))}
+				</div>
+			</div>
+		</main>
+
+		<Footer />
+	</body>
+</html>
